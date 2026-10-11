@@ -1,5 +1,5 @@
 /**
- * JSONL decision log (docs/design.md §8).
+ * JSONL decision log (docs/design.md §11).
  *
  * One line per decision appended to a session-specific JSONL file. Best-effort:
  * callers swallow errors so logging can never break the agent loop.

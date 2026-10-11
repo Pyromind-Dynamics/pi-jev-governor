@@ -1,5 +1,5 @@
 /**
- * Decision ③ — permission adjudication at `tool_call` (docs/design.md §4.2).
+ * Decision ③ — permission adjudication at `tool_call` (docs/design.md §6).
  *
  * Three layers:
  *  0. phase gate — read-only phases allow only read-only tools / safe bash;
@@ -291,10 +291,11 @@ export async function adjudicate(
 	const sensitive = sensitivePermissionInput(call, secretLiterals)
 	const sanitizedInput = sanitizedPermissionInput(call, secretLiterals)
 
-	// Layer 2 — JEV adjudication.
+	// Layer 2 — JEV adjudication. Every outgoing task prompt is scrubbed, the
+	// same invariant as the route and outcome paths.
 	const request: JevDecideRequest = {
 		state: {
-			task_prompt: truncateText(task.originalPrompt, 2000),
+			task_prompt: scrubSecretLiterals(truncateText(task.originalPrompt, 2000), deps.secretLiterals),
 			tool_name: call.toolName,
 			tool_input: truncateText(sanitizedInput, 4000),
 			approved_operations: task.approvedActions.map((a) => truncateText(a, 200)),

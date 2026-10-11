@@ -2,7 +2,7 @@
  * JEV Decisions API client.
  *
  * Native fetch + hand-written type guards, with zero runtime dependencies.
- * Contract and validation rules are preserved verbatim (docs/design.md §5).
+ * Contract and validation rules are preserved verbatim (docs/design.md §10).
  *
  * Error hygiene: every thrown error carries ONLY a reason enum — never the
  * response body, the URL, or provider error text (any of which may contain

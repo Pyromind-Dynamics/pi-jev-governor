@@ -1,5 +1,5 @@
 /**
- * Evidence construction and redaction (docs/design.md §4.3).
+ * Evidence construction and redaction (docs/design.md §8).
  *
  * Three redaction rules protect decision evidence:
  *  1. Sensitive tool evidence is omitted entirely.

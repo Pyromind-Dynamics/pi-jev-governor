@@ -1,7 +1,7 @@
 /**
  * Configuration: environment variables + the `no-jev` CLI flag.
  *
- * Validation is split in two (docs/design.md §6):
+ * Validation is split in two (docs/design.md §12):
  * - load time: strings and numbers only. Invalid config => degraded mode with
  *   a single UI notice; permissions remain fail-closed.
  * - first route: tier model resolvability (see src/route.ts) — the model

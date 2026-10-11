@@ -1,5 +1,5 @@
 /**
- * Decision ④ — outcome judgment at `agent_before_settle` (docs/design.md §4.3).
+ * Decision ④ — outcome judgment at `agent_before_settle` (docs/design.md §5).
  *
  * finish settles naturally; retry/replan inject a bounded correction and
  * continue the run. Planning validation shares the task-wide correction

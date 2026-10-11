@@ -1,8 +1,8 @@
 /**
  * Question definitions for the JEV Decisions API.
  *
- * Pure data, no runtime dependencies. Criteria wording is migrated from
- * These definitions are the standalone policy contract for the plugin.
+ * Pure data, no runtime dependencies. These definitions are the standalone
+ * policy contract for the plugin.
  */
 
 export interface ChoiceQuestion {

@@ -4,6 +4,11 @@
 
 Fixed:
 
+- Permission adjudication now scrubs configured secret literals from the
+  task prompt before sending evidence, matching the route and outcome
+  paths. Previously the permission path sent the raw prompt, so a prompt
+  containing a secret literal (e.g. a pasted key) would leave the machine
+  unredacted in that request. (`src/permission.ts`, `docs/design.md` §8)
 - Score answers from the Decisions API are the probability-weighted
   expectation over the levels (e.g. `score 3.9` with `P(3)=0.06, P(4)=0.93`),
   not an integer index. The validator now accepts any finite number in
