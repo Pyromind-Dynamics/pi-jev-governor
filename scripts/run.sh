@@ -5,8 +5,10 @@
 #   <仓库路径>/scripts/run.sh [额外的 pi 参数...]
 # 例如全旁路冒烟：
 #   <仓库路径>/scripts/run.sh --no-jev
-# 交互使用建议显式指定 --model（否则 pi 用自己的默认模型，可能未配置鉴权）：
-#   <仓库路径>/scripts/run.sh --model qwen/qwen3.7-plus
+# 模型路由的作用域由 --models（复数）定义，三档全列即可自由切换；想锁定单模型，
+# 把它作为 --models 的唯一条目（超出作用域的档位切换会被 scopedModels 守卫跳过；
+# --model 单数只设定初始模型，不构成作用域）：
+#   <仓库路径>/scripts/run.sh --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3.7-max
 #
 # 密钥只放在仓库根目录的 .env.local（已 gitignore）。
 

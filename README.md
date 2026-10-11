@@ -31,18 +31,61 @@ A decision governor for the [pi](https://pi.dev) coding agent — routes four cr
 - Planning revisions and execution corrections share a hard maximum of **2** automatic corrections.
 - Loaded directly by pi. **No bundled runtime dependencies. Does not modify pi itself.**
 
+### Live demo
+
+Four tasks recorded in the pi TUI (launched via `scripts/run.sh --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3.7-max`). After each prompt is submitted, watch the bottom status bar (`jev:<phase>/<tier>`) and the model indicator in the bottom-right corner re-route.
+
+**One-line knowledge question → `direct/small`:** the model drops from `qwen3.7-plus` to `qwen3.7-flash`.
+
+![Simple Q&A routed to the small tier: the status bar flips from jev:ready to jev:direct/small and the model indicator switches from qwen3.7-plus to qwen3.7-flash](docs/demo/route-small-flash.gif)
+
+**Routine three-step implementation → `direct/normal`:** back up from `qwen3.7-flash` to `qwen3.7-plus`.
+
+![Three-step stats tool routed to the normal tier: the status bar flips to jev:direct/normal and the model indicator switches to qwen3.7-plus](docs/demo/route-normal-plus.gif)
+
+**Risky multi-consumer refactor → `plan_then_execute/strong`:** a read-only planning phase on `qwen3.7-max` runs before any edit is allowed.
+
+![Risky refactor routed through a read-only planning phase: the status bar flips to jev:planning/strong, the model switches to qwen3.7-max, and only read-only commands run during planning](docs/demo/plan-then-execute.gif)
+
+**Architecture design question → `plan_only/strong`:** the deliverable is analysis only, so pi stays on `qwen3.7-max` without implementing anything.
+
+![Architecture design question routed to plan-only: the status bar flips to jev:plan_only/strong and the model switches to qwen3.7-max](docs/demo/plan-only-strong.gif)
+
+### Benchmarked Results (MATH-500)
+
+**Takeaway: up to 45% cost reduction with no accuracy loss — Jev's measured value here is cost allocation and negligible overhead, not accuracy.** Measured as opencode+jev (with Jev) vs opencode (without Jev) on 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded). The benchmark ran on the opencode integration of the same JEV Decisions API, sharing three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked:
+
+| Baseline Config | Jev Routing Config | Accuracy Change | Cost Change |
+|---|---|---|---|
+| qwen3.8-27b | easy: flash / main: 27b / hard: max | 97.4% → 98.3% | −1.4% |
+| qwen3.8-27b | easy: 27b / main: flash / hard: max | 98.0% → 99.1% | **−45%** |
+| qwen3.8-flash | easy: flash / main: 27b / hard: max | 91.5% → 98.7% | +51% |
+| qwen3.7-plus | easy: flash / main: plus / hard: max | 98.3% → 98.7% | −13% |
+
+**Key Findings**:
+
+- **No accuracy loss**: all four comparisons maintain or improve accuracy (+0.4 to +1.1pp on the strong baselines, within run-to-run noise)
+- **Up to 45% cost reduction**: The key is using cheaper models for the main tier—switching main to flash saves 45%, keeping main unchanged saves only 1.4%; larger price gaps yield greater savings (3.7 series with ~10× price gap saves 13%)
+- **Minimal Jev overhead**: Decision cost is only 1.4–2.6% of total, latency P50 0.6-0.7s (P95 ≤1.6s), less than 5% of total latency
+- **Lightweight governance**: Model Router judges ~22–23% of all problems easy and routes them to the cheaper model (zero accuracy loss on that subset); Outcome Judge and Permission Gate rarely trigger on pure Q&A tasks (they need coding tasks for validation); the hard tier never fired on this dataset
+- **Attribution boundary**: the single statistically significant gain (flash baseline, 91.5% → 98.7%) is attributed by the report's ablation to the agent/scaffold switch, not model routing
+
+> 📊 Full test report and methodology: [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md) (originally published in the [opencode-jev](https://github.com/qianyuxiang-369/opencode-jev) repo)
+
 ### Install
 
 ```bash
-# From Git
-pi install git:github.com/qianyuxiang-369/pi-jev-governor@v0.1.0
+# From Git (tracks the default branch)
+pi install git:github.com/qianyuxiang-369/pi-jev-governor
 
-# From npm
-pi install npm:pi-jev-governor@0.1.0
+# Pinned to a tagged release (none exists yet; usable after the first tag):
+# pi install git:github.com/qianyuxiang-369/pi-jev-governor@<tag>
 
 # From local checkout
 pi install ./pi-jev-governor
 ```
+
+npm publishing is planned but has not happened yet — until then, use the Git or local install.
 
 Try without installing:
 
@@ -68,8 +111,15 @@ export PI_JEV_API_KEY="$OPENROUTER_API_KEY"
 export PI_JEV_MODEL_SMALL="openrouter:qwen/qwen3.7-flash"
 export PI_JEV_MODEL_NORMAL="openrouter:qwen/qwen3.7-plus"
 export PI_JEV_MODEL_STRONG="openrouter:qwen/qwen3.7-max"
-pi -e ./pi-jev-governor
+pi -e ./pi-jev-governor --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3.7-max
 ```
+
+> **Tip:** tier switching only happens within the routed model's scope.
+>
+> - The scope comes from `--models` (plural) or from enabledModels in pi settings; list all three tiers for free switching.
+> - With only a subset, switches to out-of-scope tiers are skipped by the `scopedModels` guard: a one-time TUI warning appears, the status bar keeps showing the routed tier, and the model indicator stays unchanged.
+> - To pin a single model, pass it as the only `--models` entry.
+> - `--model` (singular) only picks the initial model — it creates no scope and does not block switching.
 
 Model references use `provider:modelId` format (split on the first colon).
 
@@ -191,7 +241,7 @@ Tests cover decision logic, extension wiring, parallel permission confirmations,
 An automated acceptance harness exercises the plugin end-to-end: real pi, real agent models, and a deterministic local JEV mock. Each case leaves per-case evidence and a summary `RESULTS.md`:
 
 ```bash
-./scripts/run-acceptance.sh    # 22 cases; requires .env.local and pi on PATH
+./scripts/run-acceptance.sh    # 23 cases (H01–H22 plus the H20b variant); requires .env.local and pi on PATH
 ```
 
 Interactive TUI behavior is covered by the manual screenshot protocol in [docs/acceptance-tests.md](docs/acceptance-tests.md).
@@ -231,18 +281,61 @@ MIT
 - 规划修订与执行纠正共享最多 **2 次**的硬上限修正预算。
 - 由 pi 直接加载，**无捆绑运行时依赖，不修改 pi 本身**。
 
+### 演示
+
+在 pi TUI 中录制的四个任务（通过 `scripts/run.sh --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3.7-max` 启动）。每条 prompt 提交后，注意底部状态栏（`jev:<phase>/<tier>`）与右下角模型指示器的变化。
+
+**一句话知识问答 → `direct/small`：**模型从 `qwen3.7-plus` 降到 `qwen3.7-flash`。
+
+![简单问答被路由到 small 档：状态栏从 jev:ready 翻转为 jev:direct/small，模型从 qwen3.7-plus 切到 qwen3.7-flash](docs/demo/route-small-flash.gif)
+
+**常规三步实现任务 → `direct/normal`：**从 `qwen3.7-flash` 回升到 `qwen3.7-plus`。
+
+![三步统计工具被路由到 normal 档：状态栏翻转为 jev:direct/normal，模型切到 qwen3.7-plus](docs/demo/route-normal-plus.gif)
+
+**多方共享模块的高风险重构 → `plan_then_execute/strong`：**先在 `qwen3.7-max` 上进行只读规划，规划期间仅允许只读命令。
+
+![高风险重构进入只读规划阶段：状态栏翻转为 jev:planning/strong，模型切到 qwen3.7-max，规划期间仅运行只读命令](docs/demo/plan-then-execute.gif)
+
+**架构设计题 → `plan_only/strong`：**交付物是分析报告，在 `qwen3.7-max` 上完成分析，不做任何实现。
+
+![架构设计题被路由为 plan-only：状态栏翻转为 jev:plan_only/strong，模型切到 qwen3.7-max](docs/demo/plan-only-strong.gif)
+
+### 实测效果（MATH-500 基准）
+
+**结论：成本最多省 45%，精度全部持平或更高（差异在重跑噪声带内）——Jev 的实测价值在成本分配与可忽略的开销，不在精度。** 测量方式为 opencode+jev（开 Jev）对比 opencode（不开 Jev），题集是 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在 opencode 集成上完成，使用相同的 JEV Decisions API，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 新增，未在基准范围内：
+
+| 基线配置 | Jev 路由配置 | 精度变化 | 成本变化 |
+|---|---|---|---|
+| qwen3.8-27b | 简单题 flash / 主力 27b / 难题 max | 97.4% → 98.3% | −1.4% |
+| qwen3.8-27b | 简单题 27b / 主力 flash / 难题 max | 98.0% → 99.1% | **−45%** |
+| qwen3.8-flash | 简单题 flash / 主力 27b / 难题 max | 91.5% → 98.7% | +51% |
+| qwen3.7-plus | 简单题 flash / 主力 plus / 难题 max | 98.3% → 98.7% | −13% |
+
+**关键发现**：
+
+- **精度不输**：四组对照精度全部持平或更高（强基线 +0.4～+1.1pp，在重跑噪声带内）
+- **成本可降 45%**：关键是主力档用便宜模型——主力换 flash 省 45%，主力不换只省 1.4%；价差越大省得越多（3.7 系价差 ~10 倍，省 13%）
+- **Jev 开销极低**：决策成本仅占 1.4–2.6%，延迟 P50 0.6-0.7s（P95 ≤1.6s），不到总延迟的 5%
+- **轻量级治理**：Model Router 把约 22–23% 的题判为 easy 并分到便宜模型（该子集零精度损失）；Outcome Judge 与 Permission Gate 在纯问答任务上几乎不触发（需编码类任务验证）；本数据集上 hard 档一次都未触发
+- **归因边界**：唯一统计显著的提升（flash 基线 91.5% → 98.7%）按报告消融主要来自 agent/脚手架切换而非模型路由
+
+> 📊 完整测试报告与方法论细节见 [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)（原报告收录于 [opencode-jev](https://github.com/qianyuxiang-369/opencode-jev) 仓库）
+
 ### 安装
 
 ```bash
-# 从 Git 安装
-pi install git:github.com/qianyuxiang-369/pi-jev-governor@v0.1.0
+# 从 Git 安装（跟踪默认分支）
+pi install git:github.com/qianyuxiang-369/pi-jev-governor
 
-# 从 npm 安装
-pi install npm:pi-jev-governor@0.1.0
+# 锁定到已发布的 tag（尚未打 tag；发布后可用）：
+# pi install git:github.com/qianyuxiang-369/pi-jev-governor@<tag>
 
 # 从本地目录安装
 pi install ./pi-jev-governor
 ```
+
+npm 发布尚未进行，在此之前请使用 Git 或本地安装。
 
 不安装、直接试用本地检出：
 
@@ -268,8 +361,15 @@ export PI_JEV_API_KEY="$OPENROUTER_API_KEY"
 export PI_JEV_MODEL_SMALL="openrouter:qwen/qwen3.7-flash"
 export PI_JEV_MODEL_NORMAL="openrouter:qwen/qwen3.7-plus"
 export PI_JEV_MODEL_STRONG="openrouter:qwen/qwen3.7-max"
-pi -e ./pi-jev-governor
+pi -e ./pi-jev-governor --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3.7-max
 ```
+
+> **提示：** tier 切换只在路由目标模型的作用域内发生。
+>
+> - 作用域由 `--models`（复数）或 pi settings 的 enabledModels 定义，三档全列即可自由切换。
+> - 只列部分档位时，超出作用域的切换会被 `scopedModels` 守卫跳过：TUI 弹一次性警告，状态栏仍显示路由档位，右下角模型指示器不变。
+> - 想锁定单模型，把它作为 `--models` 的唯一条目。
+> - `--model`（单数）只设定初始模型，不构成作用域，也不会阻止切换。
 
 模型引用格式为 `provider:modelId`，按第一个冒号切分。
 
@@ -391,7 +491,7 @@ npm test
 自动化验收 harness 做端到端验证：真实的 pi、真实的 agent 模型，JEV 决策指向本地确定性 mock。每个用例留档四份证据并生成 `RESULTS.md` 汇总：
 
 ```bash
-./scripts/run-acceptance.sh    # 22 个用例；需要 .env.local 与 PATH 中的 pi
+./scripts/run-acceptance.sh    # 23 个用例（H01–H22 及 H20b 变体）；需要 .env.local 与 PATH 中的 pi
 ```
 
 交互 TUI 行为由 [docs/acceptance-tests.md](docs/acceptance-tests.md) 中的人工截图协议覆盖。

@@ -21,19 +21,32 @@ Fixed:
   benign read of an innocently-named file cannot leak a token through outcome
   evidence. Narrow patterns only — git SHAs and hash constants are kept.
   (`src/evidence.ts`, `docs/design.md` §8)
+- The route decision log records when a routed tier switch was actually
+  skipped (`tier=<tier> (skipped: <reason>)` — e.g. `not_scoped`,
+  `manual_override`) instead of logging the bare routed tier as if it had
+  taken effect. (`extensions/jev.ts`)
+- README accuracy pass: the MATH-500 section now states the benchmark ran on
+  the opencode integration sharing three of pi-jev's four decision points
+  (model routing, permission, outcome) — `plan_strategy` is pi-jev-only and
+  was not benchmarked — instead of claiming identical four decision points;
+  the acceptance case count is 23 (H01–H22 plus the H20b variant); the
+  easy-tier share is phrased as ~22–23% of all problems; the pinned-install
+  example no longer cites a tag that does not exist yet. (`README.md`)
 
 Added:
 
 - Acceptance harness: `scripts/mock-jev.mjs` (deterministic local JEV
   Decisions API with scripted answers, sequential outcome scripts, and
-  per-decision-kind fault injection), `scripts/run-acceptance.sh` (22
-  end-to-end cases with per-case evidence and a `RESULTS.md` summary), and
-  `scripts/jevlog.py` (decision-log assertion helper).
+  per-decision-kind fault injection), `scripts/run-acceptance.sh` (23
+  end-to-end cases — H01–H22 plus the H20b variant — with per-case evidence
+  and a `RESULTS.md` summary), and `scripts/jevlog.py` (decision-log
+  assertion helper).
 - `docs/acceptance-tests.md`: two-track acceptance protocol (automated
   H-series + manual TUI screenshot S-series) with the smoke.md M1–M7 mapping.
 - `.env.local.example` template and `scripts/run.sh` launcher that source
   local configuration (`.env.local` is git-ignored).
-- Bilingual README (English `README.md`, Chinese `README.zh-CN.md`).
+- Single bilingual `README.md` (English + 简体中文 with anchor navigation);
+  `README.zh-CN.md` is a pointer stub.
 
 ## 0.1.0 (2026-10-08)
 
