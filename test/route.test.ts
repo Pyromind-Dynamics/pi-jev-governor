@@ -43,7 +43,7 @@ function routeResponse(plan: string, planConf: number, tier: string, tierConf: n
 			tier: { type: "choice", choice: tier, confidence: tierConf, probabilities: { small: 0, normal: 0, strong: 1 } },
 		},
 		model: "typesafe/jev-1.13",
-		usage: undefined,
+		usage: { cost: 0.00001, input_tokens: 100, output_tokens: 20 },
 		latencyMs: 12,
 	}
 }
@@ -59,6 +59,8 @@ describe("decideRoute", () => {
 		const decision = await decideRoute(decide, CONFIG, "refactor the auth module", "normal")
 		expect(decision).toMatchObject({ planStrategy: "plan_then_execute", tier: "strong", switchTier: true })
 		expect(decision.degradations).toEqual([])
+		expect(decision.latencyMs).toBe(12)
+		expect(decision.usage).toEqual({ cost: 0.00001, input_tokens: 100, output_tokens: 20 })
 	})
 
 	it("degrades to direct when plan confidence is below the threshold", async () => {
@@ -95,6 +97,8 @@ describe("decideRoute", () => {
 		expect(decision.planStrategy).toBe("direct")
 		expect(decision.switchTier).toBe(false)
 		expect(decision.errorReason).toBe("http_500")
+		expect(decision.latencyMs).toBeUndefined()
+		expect(decision.usage).toBeUndefined()
 	})
 })
 

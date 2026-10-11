@@ -9,7 +9,7 @@
 import { modelsAreEqual } from "@earendil-works/pi-ai"
 import type { Model } from "@earendil-works/pi-ai"
 import type { ScopedModel } from "@earendil-works/pi-coding-agent"
-import type { JevClient, JevDecideRequest, JevResponse } from "./client.ts"
+import type { JevClient, JevDecideRequest, JevResponse, JevUsage } from "./client.ts"
 import { JevError } from "./client.ts"
 import type { JevConfig } from "./config.ts"
 import { scrubSecretLiterals, truncateText } from "./evidence.ts"
@@ -26,6 +26,9 @@ export interface RouteDecision {
 	degradations: string[]
 	/** Sanitized reason when the JEV request itself failed. */
 	errorReason: string | undefined
+	/** Request latency and token usage for the decision log; undefined when the request failed. */
+	latencyMs: number | undefined
+	usage: JevUsage | undefined
 }
 
 /**
@@ -57,6 +60,8 @@ export async function decideRoute(
 			tierConfidence: undefined,
 			degradations: [`route request failed (${reason}); defaulting to direct, keeping current model`],
 			errorReason: String(reason),
+			latencyMs: undefined,
+			usage: undefined,
 		}
 	}
 
@@ -92,7 +97,7 @@ export async function decideRoute(
 		degradations.push("tier answer missing; keeping current model")
 	}
 
-	return { planStrategy, tier, switchTier, planConfidence, tierConfidence, degradations, errorReason: undefined }
+	return { planStrategy, tier, switchTier, planConfidence, tierConfidence, degradations, errorReason: undefined, latencyMs: response.latencyMs, usage: response.usage }
 }
 
 export type ModelRef = `${string}:${string}`

@@ -215,6 +215,7 @@ export default function jevExtension(pi: ExtensionAPI): void {
 		const currentTier: Tier = task?.tier ?? "normal"
 		const route = await decideRoute((request) => getClient().decide(request, ctx.signal), config, event.prompt, currentTier)
 		let modelRef: string | undefined = lastSetModelId
+		let tierSkipReason: string | undefined
 		if (route.switchTier) {
 			const currentRef = ctx.model === undefined ? undefined : `${ctx.model.provider}:${ctx.model.id}`
 			const usage = ctx.getContextUsage()
@@ -230,6 +231,7 @@ export default function jevExtension(pi: ExtensionAPI): void {
 				warn: (key, message) => warnOnce(key, message, ctx),
 			})
 			if (switchResult.modelRef !== undefined) modelRef = switchResult.modelRef
+			tierSkipReason = switchResult.skippedReason
 		}
 		lastSetModelId = modelRef
 
@@ -255,9 +257,15 @@ export default function jevExtension(pi: ExtensionAPI): void {
 					? { tier: { type: "choice" as const, value: route.tier, confidence: route.tierConfidence } }
 					: {}),
 			},
+			...(route.latencyMs !== undefined ? { latencyMs: route.latencyMs } : {}),
+			...(route.usage !== undefined ? { usage: route.usage } : {}),
 			effective: [
 				`phase=${task.phase}`,
-				route.switchTier ? `tier=${route.tier}` : "tier=kept",
+				route.switchTier
+					? tierSkipReason === undefined
+						? `tier=${route.tier}`
+						: `tier=${route.tier} (skipped: ${tierSkipReason})`
+					: "tier=kept",
 				...route.degradations,
 			].join("; "),
 			...(route.errorReason !== undefined ? { error: route.errorReason } : {}),
