@@ -61,7 +61,7 @@ Four tasks recorded in the pi TUI (launched via `scripts/run.sh --models qwen/qw
 
 ### Benchmarked Results (MATH-500)
 
-**Takeaway: up to 45% cost reduction with no accuracy loss — Jev's measured value here is cost allocation and negligible overhead, not accuracy.** Measured as opencode+jev (with Jev) vs opencode (without Jev) on 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded). The benchmark ran on the opencode integration of the same JEV Decisions API, sharing three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked:
+**Takeaway: up to 45% cost reduction with no accuracy loss — Jev's measured value here is cost allocation and negligible overhead, not accuracy.** Measured as Jev-enabled routing vs the same models without Jev on 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded). The benchmark ran on an integration build of the same JEV Decisions API, sharing three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked:
 
 | Baseline Config | Jev Routing Config | Accuracy Change | Cost Change |
 |---|---|---|---|
@@ -78,7 +78,7 @@ Four tasks recorded in the pi TUI (launched via `scripts/run.sh --models qwen/qw
 - **Lightweight governance**: Model Router judges ~22–23% of all problems easy and routes them to the cheaper model (zero accuracy loss on that subset); Outcome Judge and Permission Gate rarely trigger on pure Q&A tasks (they need coding tasks for validation); the hard tier never fired on this dataset
 - **Attribution boundary**: the single statistically significant gain (flash baseline, 91.5% → 98.7%) is attributed by the report's ablation to the agent/scaffold switch, not model routing
 
-> 📊 Full test report and methodology: [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md) (originally published in the [opencode-jev](https://github.com/qianyuxiang-369/opencode-jev) repo)
+> 📊 Full test report and methodology: [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
 
 ### Install
 
@@ -319,7 +319,7 @@ MIT
 
 ### 实测效果（MATH-500 基准）
 
-**结论：成本最多省 45%，精度全部持平或更高（差异在重跑噪声带内）——Jev 的实测价值在成本分配与可忽略的开销，不在精度。** 测量方式为 opencode+jev（开 Jev）对比 opencode（不开 Jev），题集是 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在 opencode 集成上完成，使用相同的 JEV Decisions API，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 新增，未在基准范围内：
+**结论：成本最多省 45%，精度全部持平或更高（差异在重跑噪声带内）——Jev 的实测价值在成本分配与可忽略的开销，不在精度。** 测量方式为开启 Jev 路由对比不开启 Jev 的同模型配置，题集是 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在 Jev 集成上完成，使用相同的 JEV Decisions API，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 新增，未在基准范围内：
 
 | 基线配置 | Jev 路由配置 | 精度变化 | 成本变化 |
 |---|---|---|---|
@@ -336,7 +336,7 @@ MIT
 - **轻量级治理**：Model Router 把约 22–23% 的题判为 easy 并分到便宜模型（该子集零精度损失）；Outcome Judge 与 Permission Gate 在纯问答任务上几乎不触发（需编码类任务验证）；本数据集上 hard 档一次都未触发
 - **归因边界**：唯一统计显著的提升（flash 基线 91.5% → 98.7%）按报告消融主要来自 agent/脚手架切换而非模型路由
 
-> 📊 完整测试报告与方法论细节见 [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)（原报告收录于 [opencode-jev](https://github.com/qianyuxiang-369/opencode-jev) 仓库）
+> 📊 完整测试报告与方法论细节见 [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
 
 ### 安装
 
