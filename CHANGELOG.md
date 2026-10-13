@@ -31,7 +31,7 @@ Fixed:
   `manual_override`) instead of logging the bare routed tier as if it had
   taken effect. (`extensions/jev.ts`)
 - README accuracy pass: the MATH-500 section now states the benchmark ran on
-  an integration sharing three of pi-jev's four decision points
+  a pi-jev build sharing three of pi-jev's four decision points
   (model routing, permission, outcome) — `plan_strategy` is pi-jev-only and
   was not benchmarked — instead of claiming identical four decision points;
   the acceptance case count is 23 (H01–H22 plus the H20b variant); the

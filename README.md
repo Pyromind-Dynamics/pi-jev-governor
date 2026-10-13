@@ -61,7 +61,7 @@ Four tasks recorded in the pi TUI (launched via `scripts/run.sh --models qwen/qw
 
 ### Benchmarked Results (MATH-500)
 
-**Takeaway: up to 45% cost reduction with no accuracy loss — Jev's measured value here is cost allocation and negligible overhead, not accuracy.** Measured as Jev-enabled routing vs the same models without Jev on 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded). The benchmark ran on an integration build of the same JEV Decisions API, sharing three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked:
+**Takeaway: up to 45% cost reduction with no accuracy loss — Jev's measured value here is cost allocation and negligible overhead, not accuracy.** Measured as Jev-enabled routing vs the same models without Jev on 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded). The benchmark ran on the pi-jev plugin implementation of the same JEV Decisions API, sharing three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked:
 
 | Baseline Config | Jev Routing Config | Accuracy Change | Cost Change |
 |---|---|---|---|
@@ -319,7 +319,7 @@ MIT
 
 ### 实测效果（MATH-500 基准）
 
-**结论：成本最多省 45%，精度全部持平或更高（差异在重跑噪声带内）——Jev 的实测价值在成本分配与可忽略的开销，不在精度。** 测量方式为开启 Jev 路由对比不开启 Jev 的同模型配置，题集是 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在 Jev 集成上完成，使用相同的 JEV Decisions API，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 新增，未在基准范围内：
+**结论：成本最多省 45%，精度全部持平或更高（差异在重跑噪声带内）——Jev 的实测价值在成本分配与可忽略的开销，不在精度。** 测量方式为开启 Jev 路由对比不开启 Jev 的同模型配置，题集是 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在 pi-jev 插件实现上完成，使用相同的 JEV Decisions API，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 新增，未在基准范围内：
 
 | 基线配置 | Jev 路由配置 | 精度变化 | 成本变化 |
 |---|---|---|---|
