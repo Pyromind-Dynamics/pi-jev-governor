@@ -38,25 +38,25 @@ Four tasks recorded in the pi TUI (launched via `scripts/run.sh --models qwen/qw
 **One-line knowledge question → `direct/small`:** the model drops from `qwen3.7-plus` to `qwen3.7-flash`.
 
 <p align="center">
-  <img src="https://github.com/qianyuxiang-369/pi-jev-governor/releases/download/demo-media/route-small-flash.gif" alt="Simple Q&A routed to the small tier: the status bar flips from jev:ready to jev:direct/small and the model indicator switches from qwen3.7-plus to qwen3.7-flash" width="600">
+  <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/route-small-flash.gif" alt="Simple Q&A routed to the small tier: the status bar flips from jev:ready to jev:direct/small and the model indicator switches from qwen3.7-plus to qwen3.7-flash" width="600">
 </p>
 
 **Routine three-step implementation → `direct/normal`:** back up from `qwen3.7-flash` to `qwen3.7-plus`.
 
 <p align="center">
-  <img src="https://github.com/qianyuxiang-369/pi-jev-governor/releases/download/demo-media/route-normal-plus.gif" alt="Three-step stats tool routed to the normal tier: the status bar flips to jev:direct/normal and the model indicator switches to qwen3.7-plus" width="600">
+  <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/route-normal-plus.gif" alt="Three-step stats tool routed to the normal tier: the status bar flips to jev:direct/normal and the model indicator switches to qwen3.7-plus" width="600">
 </p>
 
 **Risky multi-consumer refactor → `plan_then_execute/strong`:** a read-only planning phase on `qwen3.7-max` runs before any edit is allowed.
 
 <p align="center">
-  <img src="https://github.com/qianyuxiang-369/pi-jev-governor/releases/download/demo-media/plan-then-execute.gif" alt="Risky refactor routed through a read-only planning phase: the status bar flips to jev:planning/strong, the model switches to qwen3.7-max, and only read-only commands run during planning" width="600">
+  <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/plan-then-execute.gif" alt="Risky refactor routed through a read-only planning phase: the status bar flips to jev:planning/strong, the model switches to qwen3.7-max, and only read-only commands run during planning" width="600">
 </p>
 
 **Architecture design question → `plan_only/strong`:** the deliverable is analysis only, so pi stays on `qwen3.7-max` without implementing anything.
 
 <p align="center">
-  <img src="https://github.com/qianyuxiang-369/pi-jev-governor/releases/download/demo-media/plan-only-strong.gif" alt="Architecture design question routed to plan-only: the status bar flips to jev:plan_only/strong and the model switches to qwen3.7-max" width="600">
+  <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/plan-only-strong.gif" alt="Architecture design question routed to plan-only: the status bar flips to jev:plan_only/strong and the model switches to qwen3.7-max" width="600">
 </p>
 
 ### Benchmarked Results (MATH-500)
@@ -84,10 +84,10 @@ Four tasks recorded in the pi TUI (launched via `scripts/run.sh --models qwen/qw
 
 ```bash
 # From Git (tracks the default branch)
-pi install git:github.com/qianyuxiang-369/pi-jev-governor
+pi install git:github.com/Pyromind-Dynamics/pi-jev-governor
 
 # Pinned to a tagged release (none exists yet; usable after the first tag):
-# pi install git:github.com/qianyuxiang-369/pi-jev-governor@<tag>
+# pi install git:github.com/Pyromind-Dynamics/pi-jev-governor@<tag>
 
 # From local checkout
 pi install ./pi-jev-governor
@@ -296,25 +296,25 @@ MIT
 **一句话知识问答 → `direct/small`：**模型从 `qwen3.7-plus` 降到 `qwen3.7-flash`。
 
 <p align="center">
-  <img src="https://github.com/qianyuxiang-369/pi-jev-governor/releases/download/demo-media/route-small-flash.gif" alt="简单问答被路由到 small 档：状态栏从 jev:ready 翻转为 jev:direct/small，模型从 qwen3.7-plus 切到 qwen3.7-flash" width="600">
+  <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/route-small-flash.gif" alt="简单问答被路由到 small 档：状态栏从 jev:ready 翻转为 jev:direct/small，模型从 qwen3.7-plus 切到 qwen3.7-flash" width="600">
 </p>
 
 **常规三步实现任务 → `direct/normal`：**从 `qwen3.7-flash` 回升到 `qwen3.7-plus`。
 
 <p align="center">
-  <img src="https://github.com/qianyuxiang-369/pi-jev-governor/releases/download/demo-media/route-normal-plus.gif" alt="三步统计工具被路由到 normal 档：状态栏翻转为 jev:direct/normal，模型切到 qwen3.7-plus" width="600">
+  <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/route-normal-plus.gif" alt="三步统计工具被路由到 normal 档：状态栏翻转为 jev:direct/normal，模型切到 qwen3.7-plus" width="600">
 </p>
 
 **多方共享模块的高风险重构 → `plan_then_execute/strong`：**先在 `qwen3.7-max` 上进行只读规划，规划期间仅允许只读命令。
 
 <p align="center">
-  <img src="https://github.com/qianyuxiang-369/pi-jev-governor/releases/download/demo-media/plan-then-execute.gif" alt="高风险重构进入只读规划阶段：状态栏翻转为 jev:planning/strong，模型切到 qwen3.7-max，规划期间仅运行只读命令" width="600">
+  <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/plan-then-execute.gif" alt="高风险重构进入只读规划阶段：状态栏翻转为 jev:planning/strong，模型切到 qwen3.7-max，规划期间仅运行只读命令" width="600">
 </p>
 
 **架构设计题 → `plan_only/strong`：**交付物是分析报告，在 `qwen3.7-max` 上完成分析，不做任何实现。
 
 <p align="center">
-  <img src="https://github.com/qianyuxiang-369/pi-jev-governor/releases/download/demo-media/plan-only-strong.gif" alt="架构设计题被路由为 plan-only：状态栏翻转为 jev:plan_only/strong，模型切到 qwen3.7-max" width="600">
+  <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/plan-only-strong.gif" alt="架构设计题被路由为 plan-only：状态栏翻转为 jev:plan_only/strong，模型切到 qwen3.7-max" width="600">
 </p>
 
 ### 实测效果（MATH-500 基准）
@@ -342,10 +342,10 @@ MIT
 
 ```bash
 # 从 Git 安装（跟踪默认分支）
-pi install git:github.com/qianyuxiang-369/pi-jev-governor
+pi install git:github.com/Pyromind-Dynamics/pi-jev-governor
 
 # 锁定到已发布的 tag（尚未打 tag；发布后可用）：
-# pi install git:github.com/qianyuxiang-369/pi-jev-governor@<tag>
+# pi install git:github.com/Pyromind-Dynamics/pi-jev-governor@<tag>
 
 # 从本地目录安装
 pi install ./pi-jev-governor

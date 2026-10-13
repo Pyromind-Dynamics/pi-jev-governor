@@ -9,7 +9,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/qianyuxiang-369/pi-jev-governor.git"
+		"url": "git+https://github.com/Pyromind-Dynamics/pi-jev-governor.git"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
