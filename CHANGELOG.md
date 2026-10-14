@@ -66,6 +66,15 @@ Added:
   variants of the results card and workflow diagram, plus a cost-change chart
   with the ±2.6% rerun-noise band). Reference SVG sources live in
   `docs/assets/src/`.
+- README restructured to the final landing-page order: hero result card →
+  project status → benchmark → how-it-works (new detailed workflow diagram)
+  → demo → quick start → configuration → safety & privacy → development;
+  `README.md` is now English-only with the full 简体中文 version in
+  `README.zh-CN.md` (replacing the pointer stub); demo GIFs render as a 2×2
+  grid; the visible configuration is slimmed to the key variables with the
+  full reference in `<details>`; the earlier four-node workflow figures were
+  retired in favor of `docs/assets/governor-workflow.png`. (`README.md`,
+  `README.zh-CN.md`, `CHANGELOG.md`, `docs/assets/`)
 
 ## 0.1.0 (2026-10-08)
 
