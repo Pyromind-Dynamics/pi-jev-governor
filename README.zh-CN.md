@@ -24,7 +24,7 @@ Jev 决策开销 **1.4–2.6%** · 决策延迟 **P50 0.6–0.7 秒**
 </div>
 
 <p align="center">
-  <img src="docs/assets/math500-results-zh.png" alt="MATH-500：同一决策模型，四种分配策略，成本从 −45% 到 +51%，精度不输" width="860">
+  <img src="docs/assets/math500-results.png" alt="MATH-500：同一决策模型，四种分配策略，成本从 −45% 到 +51%，精度不输" width="860">
 </p>
 
 ## 🚦 项目状态

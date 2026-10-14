@@ -24,7 +24,7 @@ Jev decision overhead **1.4–2.6%** of cost · decision latency **P50 0.6–0.7
 </div>
 
 <p align="center">
-  <img src="docs/assets/math500-results-en.png" alt="MATH-500: one router, four allocation strategies — cost changes from −45% to +51%, with no accuracy loss" width="860">
+  <img src="docs/assets/math500-results.png" alt="MATH-500: one router, four allocation strategies — cost changes from −45% to +51%, with no accuracy loss" width="860">
 </p>
 
 ## 🚦 Project Status

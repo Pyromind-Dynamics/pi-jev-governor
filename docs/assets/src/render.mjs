@@ -1,11 +1,12 @@
-// Regenerates the PNG figures in docs/assets/ from the SVG sources in this
-// directory.
+// Regenerates the SVG-based PNG figures in docs/assets/ from the SVG sources
+// in this directory (the results card and the workflow diagram are external
+// designs and have no SVG source here).
 //
 //   npm install @resvg/resvg-js
-//   node render.mjs results-en.svg ../math500-results-en.png 3080
-//   sips -Z 1760 ../math500-results-en.png    # downscale for the repo
+//   node render.mjs cost-en.svg ../math500-cost-change-en.png 3080
+//   sips -Z 1760 ../math500-cost-change-en.png    # downscale for the repo
 //
-// The README displays the figures at width=860/880, so keep the longest edge
+// The README displays the figures at width=860/1000, so keep the longest edge
 // >= 1720px for HiDPI. System fonts are loaded (Helvetica Neue for the
 // English figures, PingFang SC for the Chinese ones).
 import { Resvg } from '@resvg/resvg-js';
