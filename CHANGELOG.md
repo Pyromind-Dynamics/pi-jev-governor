@@ -30,20 +30,18 @@ Fixed:
   skipped (`tier=<tier> (skipped: <reason>)` — e.g. `not_scoped`,
   `manual_override`) instead of logging the bare routed tier as if it had
   taken effect. (`extensions/jev.ts`)
-- README accuracy pass: the MATH-500 section now states the benchmark ran on
-  an agent integration built on the same JEV Decisions API, sharing three of
-  pi-jev's four decision points
-  (model routing, permission, outcome) — `plan_strategy` is pi-jev-only and
-  was not benchmarked — instead of claiming identical four decision points;
-  the acceptance case count is 23 (H01–H22 plus the H20b variant); the
+- README accuracy pass: the MATH-500 section now positions the benchmark as
+  evaluating the JEV-based three-tier routing design used by pi-jev-governor
+  and states that it covers model routing only — the plugin's planning,
+  permission, and outcome-governance features are outside the benchmark's
+  scope; the acceptance case count is 23 (H01–H22 plus the H20b variant); the
   easy-tier share is phrased as ~22–23% of all problems; the pinned-install
   example no longer cites a tag that does not exist yet. (`README.md`)
-- MATH-500 benchmark provenance wording unified across docs: the benchmark is
-  described as run in an agent integration built on the same JEV Decisions API
-  and routing policy (sharing three of pi-jev's four decision points;
-  `plan_strategy` unbenchmarked), replacing both the interim `a pi-jev build`
-  wording, which misattributed the benchmark to this package, and wording that
-  named the specific agent integration. (`README.md`,
+- MATH-500 benchmark wording finalized across docs: the benchmark is described
+  as evaluating the JEV-based three-tier routing design used by
+  pi-jev-governor (fixed-model baseline comparison, model routing only),
+  replacing earlier wordings that attributed the benchmark to a specific
+  operating setup. (`README.md`, `README.zh-CN.md`,
   `docs/math500-final-report-20261003.md`)
 
 Added:

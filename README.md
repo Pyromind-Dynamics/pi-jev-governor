@@ -35,7 +35,7 @@ Jev decision overhead **1.4–2.6%** of cost · decision latency **P50 0.6–0.7
 - ✅ Layered permission governance
 - ✅ Outcome validation and automatic correction
 - ✅ Structured decision logging
-- ✅ MATH-500 routing benchmark
+- ✅ MATH-500 routing benchmark of the JEV routing mechanism
 - ✅ Pi 0.87.1 and 1.1.0 acceptance-tested (54 assertions each)
 - 🚧 npm release
 - 🚧 Broader coding-task benchmarks
@@ -43,9 +43,9 @@ Jev decision overhead **1.4–2.6%** of cost · decision latency **P50 0.6–0.7
 
 ## 📊 Benchmark Results
 
-We evaluated JEV-based model routing on 458 text-only problems from HuggingFaceH4/MATH-500 (42 image-based problems excluded). The benchmark ran in an agent integration built on the same JEV Decisions API and routing policy — it shares three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked.
+The MATH-500 benchmark evaluates the JEV-based three-tier routing design used by Pi JEV Governor: tasks are routed to easy, main, or hard and compared against a fixed-model baseline. The evaluation uses 458 text-only problems from HuggingFaceH4/MATH-500 (42 image-based problems excluded). The benchmark focuses on model routing; the plugin's planning, permission, and outcome-governance features are outside this benchmark's scope.
 
-Each configuration compares a **fixed-model baseline** against **JEV routing** that assigns each problem to an `easy` / `main` / `hard` tier. Across the four configurations, accuracy was maintained or improved, while cost ranged from **−45% to +51%** depending on how execution models were assigned to the routing tiers. The router itself is cheap; the dominant factor is which model it sends the work to.
+Across the four configurations, accuracy was maintained or improved, while cost ranged from **−45% to +51%** depending on how execution models were assigned to the routing tiers. The router itself is cheap; the dominant factor is which model it sends the work to.
 
 <p align="center">
   <img src="docs/assets/math500-cost-change-en.png" alt="Cost change vs the fixed-model baseline: −45% (main tier to flash), −13%, −1.4% (within the ±2.6% rerun noise band), +51% (capability upgrade)" width="860">
@@ -68,7 +68,7 @@ Each configuration compares a **fixed-model baseline** against **JEV routing** t
 
 > The third configuration's larger accuracy gain (+7.2 pp) mainly reflects its much weaker starting baseline.
 >
-> Cost accounting is full-price (cold-prefix); cache effects are excluded by construction.
+> Cost is reported at full price; cache discounts are excluded.
 >
 > 📊 Full report and methodology: [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
 
