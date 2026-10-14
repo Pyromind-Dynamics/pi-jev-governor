@@ -17,7 +17,7 @@
 
   <text x="72" y="118" font-size="62" font-weight="700" fill="#171A2E">Same decision model,</text>
   <text x="72" y="196" font-size="62" font-weight="700" fill="url(#grad)">costs 96 percentage points apart</text>
-  <text x="72" y="248" font-size="28" fill="#61687E">MATH-500 · 458 text problems · OpenCode + Jev vs the OpenCode baseline</text>
+  <text x="72" y="248" font-size="28" fill="#61687E">MATH-500 · 458 text problems · Jev routing vs the same models without Jev</text>
 
   <g filter="url(#soft)">
     <rect x="72" y="300" width="450" height="150" rx="20" fill="#FFFFFF"/>

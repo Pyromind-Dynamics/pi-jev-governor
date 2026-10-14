@@ -31,19 +31,20 @@ Fixed:
   `manual_override`) instead of logging the bare routed tier as if it had
   taken effect. (`extensions/jev.ts`)
 - README accuracy pass: the MATH-500 section now states the benchmark ran on
-  the opencode integration sharing three of pi-jev's four decision points
+  an agent integration built on the same JEV Decisions API, sharing three of
+  pi-jev's four decision points
   (model routing, permission, outcome) — `plan_strategy` is pi-jev-only and
   was not benchmarked — instead of claiming identical four decision points;
   the acceptance case count is 23 (H01–H22 plus the H20b variant); the
   easy-tier share is phrased as ~22–23% of all problems; the pinned-install
   example no longer cites a tag that does not exist yet. (`README.md`)
-- Benchmark provenance wording restored across docs: the MATH-500 section and
-  the report again name the opencode-jev integration, now linked at
-  https://github.com/Pyromind-Dynamics/opencode-jev. The 2026-10-13
-  genericization ("a pi-jev build") conflicted with the report's own ablation
-  (opencode build→plan agents) and with the benchmark timeline (the report
-  predates this package); the earlier `qianyuxiang-369/opencode-jev` link was
-  dead. (`README.md`, `docs/math500-final-report-20261003.md`, `CHANGELOG.md`)
+- MATH-500 benchmark provenance wording unified across docs: the benchmark is
+  described as run in an agent integration built on the same JEV Decisions API
+  and routing policy (sharing three of pi-jev's four decision points;
+  `plan_strategy` unbenchmarked), replacing both the interim `a pi-jev build`
+  wording, which misattributed the benchmark to this package, and wording that
+  named the specific agent integration. (`README.md`,
+  `docs/math500-final-report-20261003.md`)
 
 Added:
 

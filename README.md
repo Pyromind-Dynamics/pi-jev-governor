@@ -4,7 +4,7 @@
 
 A decision governance layer for the [pi](https://pi.dev) coding agent, powered by the JEV Decisions API: planning strategy, model-tier routing, permission adjudication, and outcome verification.
 
-**Up to 45% lower model cost on MATH-500 — with no accuracy loss.**<br>
+**Up to 45% lower model cost in the MATH-500 routing benchmark, with no accuracy loss.**<br>
 Jev decision overhead **1.4–2.6%** of cost · decision latency **P50 0.6–0.7 s**
 
 [![CI](https://github.com/Pyromind-Dynamics/pi-jev-governor/actions/workflows/ci.yml/badge.svg)](https://github.com/Pyromind-Dynamics/pi-jev-governor/actions/workflows/ci.yml)
@@ -38,7 +38,7 @@ pi-jev-governor runs today as a real pi extension and is still evolving:
 - ✅ Four decision points: planning strategy, model-tier routing, permission adjudication, outcome verification
 - ✅ Model compatibility guards and scope-safe tier switching
 - ✅ pi **0.87.1** and **1.1.0** both pass the full acceptance suite (54 assertions each)
-- ✅ MATH-500 routing benchmark with a full public report
+- ✅ MATH-500 routing benchmark using the same Jev routing mechanism, with a full public report
 - ✅ Structured, redacted decision logs (directories `0700`, files `0600`)
 - ✅ CI on every push — typecheck + 159 unit tests
 - 🚧 npm package release
@@ -95,7 +95,7 @@ route: plan_strategy + tier
 
 **Takeaway: up to 45% cost reduction with no accuracy loss — Jev's measured value here is cost allocation and negligible overhead, not accuracy.**
 
-Basis: 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded), Jev-enabled routing vs the same models without Jev. The benchmark ran on [opencode-jev](https://github.com/Pyromind-Dynamics/opencode-jev) — the opencode agent with the same Jev reflex routing, a sibling integration sharing three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked.
+Basis: 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded); Jev-enabled routing vs the same models without Jev. The benchmark was run in an agent integration built on the same JEV Decisions API and routing policy — it shares three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked.
 
 <p align="center">
   <img src="docs/assets/math500-cost-change-en.png" alt="Cost change vs the fixed-model baseline: −45% (main tier to flash), −13%, −1.4% (within the ±2.6% rerun noise band), +51% (capability upgrade)" width="860">
@@ -331,7 +331,7 @@ pi-jev-governor 现在就是可运行的 pi 扩展，并持续演进：
 - ✅ 四个决策点：规划策略、模型档位路由、权限裁决、结果校验
 - ✅ 模型兼容性守卫与作用域安全的 tier 切换
 - ✅ pi **0.87.1** 与 **1.1.0** 均通过完整验收（各 54 项断言）
-- ✅ MATH-500 路由基准与公开的完整报告
+- ✅ 基于同一 Jev 路由机制的 MATH-500 路由基准（公开完整报告）
 - ✅ 结构化且脱敏的决策日志（目录 `0700`、文件 `0600`）
 - ✅ 每次推送跑 CI —— typecheck + 159 项单元测试
 - 🚧 npm 发布
@@ -388,7 +388,7 @@ pi-jev-governor 现在就是可运行的 pi 扩展，并持续演进：
 
 **结论：成本最多省 45%，精度全部持平或更高（差异在重跑噪声带内）——Jev 的实测价值在成本分配与可忽略的开销，不在精度。**
 
-测量方式：不开 Jev 的同模型固定配置 vs 开启 Jev 路由，题集为 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在 [opencode-jev](https://github.com/Pyromind-Dynamics/opencode-jev) 上完成——opencode agent 上同一套 Jev reflex 路由，属同源集成，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 独有，未在基准范围内。
+测量方式：不开 Jev 的同模型固定配置 vs 开启 Jev 路由，题集为 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在同一套 JEV Decisions API 与路由策略的 agent 集成上完成，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 独有，未在基准范围内。
 
 <p align="center">
   <img src="docs/assets/math500-cost-change-zh.png" alt="相对固定模型基线的成本变化：−45%（主力换 flash）、−13%、−1.4%（在 ±2.6% 重跑噪声带内）、+51%（能力升级）" width="860">

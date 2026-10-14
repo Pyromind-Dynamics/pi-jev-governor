@@ -1,6 +1,6 @@
 # MATH-500 评测报告：Jev reflex 配置的效果与边界
 
-- **对象**：opencode-jev `reflex` agent（https://github.com/Pyromind-Dynamics/opencode-jev）—— Jev 三决策点（Model Router 模型路由 / Outcome Judge 结果判定 / Permission Gate 权限把关）
+- **对象**：Jev `reflex` agent 集成 —— Jev 三决策点（Model Router 模型路由 / Outcome Judge 结果判定 / Permission Gate 权限把关）
 - **数据**：HuggingFaceH4/MATH-500 test split，458 道文本题（42 道含图题排除）
 - **判分**：hybrid 管线（TS 抽取/规范化 + HuggingFace Math-Verify 0.9.0 终审），判分器全程同一版本；另把全部完成格的答案单独送 Math-Verify 复核（3,660 格）：**双向零分歧**（该复核复用了 TS 抽取结果，属等价性复核而非端到端独立判分）
 - **配置共同项**：三置信阈值 0.5、纠错上限 2、超时 300s、每格最多 8 轮、每题 1 次重复、seed 20260930
@@ -19,7 +19,7 @@
 
 全部运行按"是否开 Jev"分成两组，同一配置跑了两次的按时间先后列出（用于看重跑漂移）。
 
-**不开 Jev（opencode 单模型 + 固定 agent）**：
+**不开 Jev（单模型 + 固定 agent）**：
 
 | 模型系列 | 配置 | 精度 | 成本 |
 |---|---|---|---|
