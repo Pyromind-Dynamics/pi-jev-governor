@@ -31,12 +31,19 @@ Fixed:
   `manual_override`) instead of logging the bare routed tier as if it had
   taken effect. (`extensions/jev.ts`)
 - README accuracy pass: the MATH-500 section now states the benchmark ran on
-  a pi-jev build sharing three of pi-jev's four decision points
+  the opencode integration sharing three of pi-jev's four decision points
   (model routing, permission, outcome) — `plan_strategy` is pi-jev-only and
   was not benchmarked — instead of claiming identical four decision points;
   the acceptance case count is 23 (H01–H22 plus the H20b variant); the
   easy-tier share is phrased as ~22–23% of all problems; the pinned-install
   example no longer cites a tag that does not exist yet. (`README.md`)
+- Benchmark provenance wording restored across docs: the MATH-500 section and
+  the report again name the opencode-jev integration, now linked at
+  https://github.com/Pyromind-Dynamics/opencode-jev. The 2026-10-13
+  genericization ("a pi-jev build") conflicted with the report's own ablation
+  (opencode build→plan agents) and with the benchmark timeline (the report
+  predates this package); the earlier `qianyuxiang-369/opencode-jev` link was
+  dead. (`README.md`, `docs/math500-final-report-20261003.md`, `CHANGELOG.md`)
 
 Added:
 
@@ -52,6 +59,12 @@ Added:
   local configuration (`.env.local` is git-ignored).
 - Single bilingual `README.md` (English + 简体中文 with anchor navigation);
   `README.zh-CN.md` is a pointer stub.
+- README restructured as a project landing page: hero result line, project
+  status, workflow diagram for the four decision points, and a slimmed
+  MATH-500 section; new figures in `docs/assets/` (English and 简体中文
+  variants of the results card and workflow diagram, plus a cost-change chart
+  with the ±2.6% rerun-noise band). Reference SVG sources live in
+  `docs/assets/src/`.
 
 ## 0.1.0 (2026-10-08)
 

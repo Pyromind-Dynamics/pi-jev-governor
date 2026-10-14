@@ -2,6 +2,17 @@
 
 # pi-jev-governor
 
+A decision governance layer for the [pi](https://pi.dev) coding agent, powered by the JEV Decisions API: planning strategy, model-tier routing, permission adjudication, and outcome verification.
+
+**Up to 45% lower model cost on MATH-500 — with no accuracy loss.**<br>
+Jev decision overhead **1.4–2.6%** of cost · decision latency **P50 0.6–0.7 s**
+
+[![CI](https://github.com/Pyromind-Dynamics/pi-jev-governor/actions/workflows/ci.yml/badge.svg)](https://github.com/Pyromind-Dynamics/pi-jev-governor/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![pi 0.87.1+](https://img.shields.io/badge/pi-0.87.1%2B-6f42c1)
+![TypeScript 5.x](https://img.shields.io/badge/TypeScript-5.x-3178c6)
+![powered by JEV](https://img.shields.io/badge/powered_by-JEV_Decisions_API-7c3aed)
+
 **[English](#en)** | **[简体中文](#zh)**
 
 </div>
@@ -16,9 +27,31 @@
 
 </div>
 
-A decision governor for the [pi](https://pi.dev) coding agent — routes four critical agent decisions through the JEV Decisions API to add intelligent planning, model routing, permission control, and outcome validation.
+<p align="center">
+  <img src="docs/assets/math500-results-en.png" alt="MATH-500: one router, four allocation strategies — cost changes from −45% to +51%, with no accuracy loss" width="860">
+</p>
 
-### What it does
+### 🚦 Project Status
+
+pi-jev-governor runs today as a real pi extension and is still evolving:
+
+- ✅ Four decision points: planning strategy, model-tier routing, permission adjudication, outcome verification
+- ✅ Model compatibility guards and scope-safe tier switching
+- ✅ pi **0.87.1** and **1.1.0** both pass the full acceptance suite (54 assertions each)
+- ✅ MATH-500 routing benchmark with a full public report
+- ✅ Structured, redacted decision logs (directories `0700`, files `0600`)
+- ✅ CI on every push — typecheck + 159 unit tests
+- 🚧 npm package release
+- 🚧 Tagged release (pinned installs currently track the default branch)
+- 🚧 Coding-task benchmarks — Outcome Judge and Permission Gate need them to be exercised
+
+### 🧠 How it works
+
+> Rules handle deterministic boundaries. JEV handles bounded decisions. Humans handle low-confidence and high-risk cases.
+
+<p align="center">
+  <img src="docs/assets/governor-workflow-en.png" alt="Four decision points in one task flow around the coding agent: planning strategy and model tier at task start, permission on tool calls, outcome verification before settle" width="880">
+</p>
 
 | Decision | pi event | Result |
 |---|---|---|
@@ -31,7 +64,65 @@ A decision governor for the [pi](https://pi.dev) coding agent — routes four cr
 - Planning revisions and execution corrections share a hard maximum of **2** automatic corrections.
 - Loaded directly by pi. **No bundled runtime dependencies. Does not modify pi itself.**
 
-### Live demo
+<details>
+<summary><strong>Lifecycle &amp; state</strong></summary>
+
+```text
+user prompt
+   │
+   ▼
+route: plan_strategy + tier
+   ├─ direct ────────────────────────────────┐
+   ├─ plan_only (read-only) ─────────────────┤
+   └─ planning (read-only)                   │
+        │ Outcome validates the plan         │
+        ├─ retry/replan → revise plan        │
+        ├─ finish → restore tools, execute   │
+        └─ unavailable/low confidence → stop │
+                                              ▼
+                                     Outcome validates delivery
+                                        ├─ finish → settle
+                                        └─ retry/replan → correct and continue
+```
+
+- Each new `before_agent_start` begins a task and clears its approval cache. Continuations, steering, and follow-ups inherit the active route.
+- State is stored as `jev-state` session entries. Resume and tree navigation restore from the active branch via `getBranch()`, including the read-only tool snapshot, correction budget, and model-routing state.
+- Continuation is committed atomically at the settle boundary: state entry + `custom_message` with `continue: true`, then pi recomputes whether the final context can continue.
+
+</details>
+
+### 📊 Benchmark — MATH-500
+
+**Takeaway: up to 45% cost reduction with no accuracy loss — Jev's measured value here is cost allocation and negligible overhead, not accuracy.**
+
+Basis: 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded), Jev-enabled routing vs the same models without Jev. The benchmark ran on [opencode-jev](https://github.com/Pyromind-Dynamics/opencode-jev) — the opencode agent with the same Jev reflex routing, a sibling integration sharing three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked.
+
+<p align="center">
+  <img src="docs/assets/math500-cost-change-en.png" alt="Cost change vs the fixed-model baseline: −45% (main tier to flash), −13%, −1.4% (within the ±2.6% rerun noise band), +51% (capability upgrade)" width="860">
+</p>
+
+| Baseline Config | Jev Routing Config | Accuracy Change | Cost Change |
+|---|---|---|---|
+| qwen3.8-27b | easy: flash / main: 27b / hard: max | 97.4% → 98.3% | −1.4% |
+| qwen3.8-27b | easy: 27b / main: flash / hard: max | 98.0% → 99.1% | **−45%** |
+| qwen3.8-flash | easy: flash / main: 27b / hard: max | 91.5% → 98.7% | +51% |
+| qwen3.7-plus | easy: flash / main: plus / hard: max | 98.3% → 98.7% | −13% |
+
+**Key findings**:
+
+- **No accuracy loss** — all four comparisons maintain or improve accuracy (+0.4 to +1.1 pp on the strong baselines, within run-to-run noise).
+- **Allocation, not the router, decides cost** — moving the main tier to flash saves 45%; leaving it unchanged saves only 1.4%; larger price gaps yield larger savings (3.7 series, ≈10× gap: 13%).
+- **Minimal Jev overhead** — decisions cost 1.4–2.6% of the total; latency P50 0.6–0.7 s (P95 ≤1.6 s), less than 5% of total latency.
+- **Lightweight governance** — the Model Router flags ~22–23% of problems as easy with zero accuracy loss on that subset; the hard tier never fired on this dataset, and Outcome Judge / Permission Gate rarely trigger on pure Q&A (coding tasks are needed to exercise them).
+- **Attribution boundary** — the single statistically significant accuracy gain (flash baseline, 91.5% → 98.7%) is attributed by the report's ablation to the agent/scaffold switch, not to model routing.
+
+> **Reading the +51% row:** it intentionally upgrades the dominant main tier from flash to 27b — a capability-for-cost tradeoff, not a cost-saving configuration.
+>
+> **Cost accounting:** full-price (cold-prefix) — the experiment used dynamic prefixes, so cache effects are excluded by construction; the −45% includes neither a cache discount nor a switch re-prefill cost.
+>
+> 📊 Full test report and methodology: [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
+
+### 🎬 Live demo
 
 Four tasks recorded in the pi TUI (launched via `scripts/run.sh --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3.7-max`). After each prompt is submitted, watch the bottom status bar (`jev:<phase>/<tier>`) and the model indicator in the bottom-right corner re-route.
 
@@ -59,28 +150,7 @@ Four tasks recorded in the pi TUI (launched via `scripts/run.sh --models qwen/qw
   <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/plan-only-strong.gif" alt="Architecture design question routed to plan-only: the status bar flips to jev:plan_only/strong and the model switches to qwen3.7-max" width="600">
 </p>
 
-### Benchmarked Results (MATH-500)
-
-**Takeaway: up to 45% cost reduction with no accuracy loss — Jev's measured value here is cost allocation and negligible overhead, not accuracy.** Measured as Jev-enabled routing vs the same models without Jev on 458 text problems from HuggingFaceH4/MATH-500 (42 image problems excluded). The benchmark ran on the pi-jev plugin implementation of the same JEV Decisions API, sharing three of pi-jev's four decision points (model routing, permission, outcome); `plan_strategy` is pi-jev-only and was not benchmarked:
-
-| Baseline Config | Jev Routing Config | Accuracy Change | Cost Change |
-|---|---|---|---|
-| qwen3.8-27b | easy: flash / main: 27b / hard: max | 97.4% → 98.3% | −1.4% |
-| qwen3.8-27b | easy: 27b / main: flash / hard: max | 98.0% → 99.1% | **−45%** |
-| qwen3.8-flash | easy: flash / main: 27b / hard: max | 91.5% → 98.7% | +51% |
-| qwen3.7-plus | easy: flash / main: plus / hard: max | 98.3% → 98.7% | −13% |
-
-**Key Findings**:
-
-- **No accuracy loss**: all four comparisons maintain or improve accuracy (+0.4 to +1.1pp on the strong baselines, within run-to-run noise)
-- **Up to 45% cost reduction**: The key is using cheaper models for the main tier—switching main to flash saves 45%, keeping main unchanged saves only 1.4%; larger price gaps yield greater savings (3.7 series with ~10× price gap saves 13%)
-- **Minimal Jev overhead**: Decision cost is only 1.4–2.6% of total, latency P50 0.6-0.7s (P95 ≤1.6s), less than 5% of total latency
-- **Lightweight governance**: Model Router judges ~22–23% of all problems easy and routes them to the cheaper model (zero accuracy loss on that subset); Outcome Judge and Permission Gate rarely trigger on pure Q&A tasks (they need coding tasks for validation); the hard tier never fired on this dataset
-- **Attribution boundary**: the single statistically significant gain (flash baseline, 91.5% → 98.7%) is attributed by the report's ablation to the agent/scaffold switch, not model routing
-
-> 📊 Full test report and methodology: [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
-
-### Install
+### 🚀 Install
 
 ```bash
 # From Git (tracks the default branch)
@@ -103,7 +173,7 @@ pi -e ./pi-jev-governor
 
 > **Requires pi 0.87.1+** — both 0.87.1 and 1.1.0 pass the full acceptance suite (54 assertions each; evidence in [`evidence/acceptance-20261008-163809`](evidence/acceptance-20261008-163809) for 0.87.1 and [`evidence/acceptance-20261008-180941`](evidence/acceptance-20261008-180941) for 1.1.0). `@earendil-works/pi-ai` and `@earendil-works/pi-coding-agent` are peer dependencies supplied by pi.
 
-### Configure
+### ⚙️ Configure
 
 At minimum, set the JEV credential and one pi model per tier. The repo provides a `.env.local` template and a launch script:
 
@@ -164,31 +234,7 @@ Model references use `provider:modelId` format (split on the first colon).
 
 **Degraded mode**: missing/invalid remote config enters `degraded` (not full bypass). Routing falls back to direct/current-model, Outcome automation stops, but the local permission gate stays active. Calls needing remote judgment ask the user when UI is available and fail-closed when it is not.
 
-### Lifecycle
-
-```text
-user prompt
-   │
-   ▼
-route: plan_strategy + tier
-   ├─ direct ────────────────────────────────┐
-   ├─ plan_only (read-only) ─────────────────┤
-   └─ planning (read-only)                   │
-        │ Outcome validates the plan         │
-        ├─ retry/replan → revise plan        │
-        ├─ finish → restore tools, execute   │
-        └─ unavailable/low confidence → stop │
-                                              ▼
-                                     Outcome validates delivery
-                                        ├─ finish → settle
-                                        └─ retry/replan → correct and continue
-```
-
-- Each new `before_agent_start` begins a task and clears its approval cache. Continuations, steering, and follow-ups inherit the active route.
-- State is stored as `jev-state` session entries. Resume and tree navigation restore from the active branch via `getBranch()`, including the read-only tool snapshot, correction budget, and model-routing state.
-- Continuation is committed atomically at the settle boundary: state entry + `custom_message` with `continue: true`, then pi recomputes whether the final context can continue.
-
-### Permission gate
+### 🛡 Permission gate
 
 Four-layer permission pipeline:
 
@@ -199,7 +245,7 @@ Four-layer permission pipeline:
 
 Human choices are task-scoped: allow once · allow exact call for task · allow tool for task · block. Caches clear on next task and on session-tree navigation.
 
-### Privacy & data disclosure
+### 🔒 Privacy & data disclosure
 
 The plugin sends the **minimum evidence** needed for each decision:
 
@@ -230,11 +276,11 @@ Directories: mode `0700`; files: mode `0600`. Logs contain structured answers, c
 
 </details>
 
-### Security boundary
+### 🧱 Security boundary
 
 This package is **workflow control, not an OS sandbox**. It runs inside pi with the same process privileges. Use containerization or another system security boundary for untrusted or unattended execution.
 
-### Development
+### 🧪 Development
 
 ```bash
 npm install
@@ -254,7 +300,7 @@ An automated acceptance harness exercises the plugin end-to-end: real pi, real a
 
 Interactive TUI behavior is covered by the manual screenshot protocol in [docs/acceptance-tests.md](docs/acceptance-tests.md).
 
-### Documentation
+### 📚 Documentation
 
 - [docs/design.md](docs/design.md) — v3 design specification
 - [docs/acceptance-tests.md](docs/acceptance-tests.md) — acceptance test protocol
@@ -274,9 +320,31 @@ MIT
 
 </div>
 
-[pi](https://pi.dev) 编码代理的「治理器」（governor）——通过 JEV Decisions API 路由四个关键决策点，为编码代理增加智能规划、模型路由、权限控制和结果校验能力。
+<p align="center">
+  <img src="docs/assets/math500-results-zh.png" alt="MATH-500：同一决策模型，四种分配策略，成本从 −45% 到 +51%，精度不输" width="860">
+</p>
 
-### 功能概览
+### 🚦 项目状态
+
+pi-jev-governor 现在就是可运行的 pi 扩展，并持续演进：
+
+- ✅ 四个决策点：规划策略、模型档位路由、权限裁决、结果校验
+- ✅ 模型兼容性守卫与作用域安全的 tier 切换
+- ✅ pi **0.87.1** 与 **1.1.0** 均通过完整验收（各 54 项断言）
+- ✅ MATH-500 路由基准与公开的完整报告
+- ✅ 结构化且脱敏的决策日志（目录 `0700`、文件 `0600`）
+- ✅ 每次推送跑 CI —— typecheck + 159 项单元测试
+- 🚧 npm 发布
+- 🚧 版本 tag / Release（`@<tag>` 锁定安装示例等首个 tag 发布后启用）
+- 🚧 编码类基准 —— Outcome Judge 与 Permission Gate 需要编码任务才能被检验
+
+### 🧠 工作原理
+
+> 确定性规则定义边界，Jev 负责有界决策，人工兜底低置信与高风险。
+
+<p align="center">
+  <img src="docs/assets/governor-workflow-zh.png" alt="四个决策点进入同一条任务流程：任务开始时定规划策略与模型档位，工具调用经过权限门，交付前做结果判定" width="880">
+</p>
 
 | 决策 | pi 事件 | 结果 |
 |---|---|---|
@@ -289,7 +357,65 @@ MIT
 - 规划修订与执行纠正共享最多 **2 次**的硬上限修正预算。
 - 由 pi 直接加载，**无捆绑运行时依赖，不修改 pi 本身**。
 
-### 演示
+<details>
+<summary><strong>生命周期与状态</strong></summary>
+
+```text
+用户 prompt
+   │
+   ▼
+路由：plan_strategy + tier
+   ├─ direct ────────────────────────────────┐
+   ├─ plan_only（只读）──────────────────────┤
+   └─ planning（只读）                        │
+        │ Outcome 校验计划                    │
+        ├─ retry/replan → 修订规划            │
+        ├─ finish → 恢复工具，开始执行         │
+        └─ 不可用/低置信 → 停止                │
+                                              ▼
+                                     Outcome 校验交付物
+                                        ├─ finish → 结束
+                                        └─ retry/replan → 纠正并续跑
+```
+
+- 每次新的 `before_agent_start` 开启一个任务并清空其批准缓存。续跑、steering 和追问继承活动路由，不会重新路由。
+- 状态以 `jev-state` 会话条目存储。会话恢复与分支导航通过 `getBranch()` 从活动分支还原，包括只读工具快照、修正预算和模型路由状态。
+- 续跑在 settle 边界原子提交：状态条目与 `custom_message` 以 `continue: true` 一起返回，随后由 pi 重算最终上下文能否续跑。
+
+</details>
+
+### 📊 实测效果（MATH-500 基准）
+
+**结论：成本最多省 45%，精度全部持平或更高（差异在重跑噪声带内）——Jev 的实测价值在成本分配与可忽略的开销，不在精度。**
+
+测量方式：不开 Jev 的同模型固定配置 vs 开启 Jev 路由，题集为 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在 [opencode-jev](https://github.com/Pyromind-Dynamics/opencode-jev) 上完成——opencode agent 上同一套 Jev reflex 路由，属同源集成，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 独有，未在基准范围内。
+
+<p align="center">
+  <img src="docs/assets/math500-cost-change-zh.png" alt="相对固定模型基线的成本变化：−45%（主力换 flash）、−13%、−1.4%（在 ±2.6% 重跑噪声带内）、+51%（能力升级）" width="860">
+</p>
+
+| 基线配置 | Jev 路由配置 | 精度变化 | 成本变化 |
+|---|---|---|---|
+| qwen3.8-27b | 简单题 flash / 主力 27b / 难题 max | 97.4% → 98.3% | −1.4% |
+| qwen3.8-27b | 简单题 27b / 主力 flash / 难题 max | 98.0% → 99.1% | **−45%** |
+| qwen3.8-flash | 简单题 flash / 主力 27b / 难题 max | 91.5% → 98.7% | +51% |
+| qwen3.7-plus | 简单题 flash / 主力 plus / 难题 max | 98.3% → 98.7% | −13% |
+
+**关键发现**：
+
+- **精度不输** —— 四组对照精度全部持平或更高（强基线 +0.4～+1.1pp，在重跑噪声带内）。
+- **省钱多少由分配决定，不由路由器决定** —— 主力换 flash 省 45%；主力不换只省 1.4%；价差越大省得越多（3.7 系价差约 10 倍，省 13%）。
+- **Jev 开销极低** —— 决策成本仅占 1.4–2.6%；延迟 P50 0.6–0.7s（P95 ≤1.6s），不到总延迟的 5%。
+- **轻量级治理** —— Model Router 把约 22–23% 的题判为 easy（该子集零精度损失）；本数据集上 hard 档一次都未触发；Outcome Judge 与 Permission Gate 在纯问答上几乎不触发（需编码类任务验证）。
+- **归因边界** —— 唯一统计显著的精度提升（flash 基线 91.5% → 98.7%）按报告消融主要来自 agent/脚手架切换，而非模型路由。
+
+> **怎么读 +51% 那一行**：它是有意把主力档从 flash 升到 27b——花钱换能力，不是省钱的配置。
+>
+> **记账口径**：全价（冷前缀）——实验使用动态前缀，缓存被排除在外；45% 既不含缓存折扣，也不含切换开销。
+>
+> 📊 完整测试报告与方法论细节见 [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
+
+### 🎬 演示
 
 在 pi TUI 中录制的四个任务（通过 `scripts/run.sh --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3.7-max` 启动）。每条 prompt 提交后，注意底部状态栏（`jev:<phase>/<tier>`）与右下角模型指示器的变化。
 
@@ -317,28 +443,7 @@ MIT
   <img src="https://github.com/Pyromind-Dynamics/pi-jev-governor/releases/download/demo-media/plan-only-strong.gif" alt="架构设计题被路由为 plan-only：状态栏翻转为 jev:plan_only/strong，模型切到 qwen3.7-max" width="600">
 </p>
 
-### 实测效果（MATH-500 基准）
-
-**结论：成本最多省 45%，精度全部持平或更高（差异在重跑噪声带内）——Jev 的实测价值在成本分配与可忽略的开销，不在精度。** 测量方式为开启 Jev 路由对比不开启 Jev 的同模型配置，题集是 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。基准在 pi-jev 插件实现上完成，使用相同的 JEV Decisions API，覆盖 pi-jev 四个决策点中的三个（模型路由 / 权限 / 结果判定）；`plan_strategy` 为 pi-jev 新增，未在基准范围内：
-
-| 基线配置 | Jev 路由配置 | 精度变化 | 成本变化 |
-|---|---|---|---|
-| qwen3.8-27b | 简单题 flash / 主力 27b / 难题 max | 97.4% → 98.3% | −1.4% |
-| qwen3.8-27b | 简单题 27b / 主力 flash / 难题 max | 98.0% → 99.1% | **−45%** |
-| qwen3.8-flash | 简单题 flash / 主力 27b / 难题 max | 91.5% → 98.7% | +51% |
-| qwen3.7-plus | 简单题 flash / 主力 plus / 难题 max | 98.3% → 98.7% | −13% |
-
-**关键发现**：
-
-- **精度不输**：四组对照精度全部持平或更高（强基线 +0.4～+1.1pp，在重跑噪声带内）
-- **成本可降 45%**：关键是主力档用便宜模型——主力换 flash 省 45%，主力不换只省 1.4%；价差越大省得越多（3.7 系价差 ~10 倍，省 13%）
-- **Jev 开销极低**：决策成本仅占 1.4–2.6%，延迟 P50 0.6-0.7s（P95 ≤1.6s），不到总延迟的 5%
-- **轻量级治理**：Model Router 把约 22–23% 的题判为 easy 并分到便宜模型（该子集零精度损失）；Outcome Judge 与 Permission Gate 在纯问答任务上几乎不触发（需编码类任务验证）；本数据集上 hard 档一次都未触发
-- **归因边界**：唯一统计显著的提升（flash 基线 91.5% → 98.7%）按报告消融主要来自 agent/脚手架切换而非模型路由
-
-> 📊 完整测试报告与方法论细节见 [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
-
-### 安装
+### 🚀 安装
 
 ```bash
 # 从 Git 安装（跟踪默认分支）
@@ -361,7 +466,7 @@ pi -e ./pi-jev-governor
 
 > **需要 pi 0.87.1+** ——0.87.1 与 1.1.0 均通过完整验收（各 54 项断言；证据分别在 0.87.1 的 [`evidence/acceptance-20261008-163809`](evidence/acceptance-20261008-163809) 与 1.1.0 的 [`evidence/acceptance-20261008-180941`](evidence/acceptance-20261008-180941)）。`@earendil-works/pi-ai` 与 `@earendil-works/pi-coding-agent` 是 peer 依赖，由 pi 提供。
 
-### 配置
+### ⚙️ 配置
 
 最少只需配置 JEV 凭据和每档一个 pi 模型。仓库提供 `.env.local` 模板和启动脚本：
 
@@ -422,31 +527,7 @@ pi -e ./pi-jev-governor --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3
 
 **降级模式**：远端配置缺失或无效时进入 `degraded` 模式（非完全旁路）。路由使用 direct/当前模型兜底，Outcome 自动化停止，但本地权限门保持生效。需要远端裁决的调用在有 UI 时询问用户，无 UI 时 fail-closed 阻断。
 
-### 生命周期
-
-```text
-用户 prompt
-   │
-   ▼
-路由：plan_strategy + tier
-   ├─ direct ────────────────────────────────┐
-   ├─ plan_only（只读）──────────────────────┤
-   └─ planning（只读）                        │
-        │ Outcome 校验计划                    │
-        ├─ retry/replan → 修订规划            │
-        ├─ finish → 恢复工具，开始执行         │
-        └─ 不可用/低置信 → 停止                │
-                                              ▼
-                                     Outcome 校验交付物
-                                        ├─ finish → 结束
-                                        └─ retry/replan → 纠正并续跑
-```
-
-- 每次新的 `before_agent_start` 开启一个任务并清空其批准缓存。续跑、steering 和追问继承活动路由，不会重新路由。
-- 状态以 `jev-state` 会话条目存储。会话恢复与分支导航通过 `getBranch()` 从活动分支还原，包括只读工具快照、修正预算和模型路由状态。
-- 续跑在 settle 边界原子提交：状态条目与 `custom_message` 以 `continue: true` 一起返回，随后由 pi 重算最终上下文能否续跑。
-
-### 权限门
+### 🛡 权限门
 
 四层权限管线：
 
@@ -457,7 +538,7 @@ pi -e ./pi-jev-governor --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3
 
 人工选择是任务级的：仅允许一次 · 允许本任务此调用 · 允许本任务此工具 · 阻止。缓存在下一个任务和会话树导航时清空。
 
-### 隐私与数据披露
+### 🔒 隐私与数据披露
 
 插件为每个决策发送**最少量的证据**：
 
@@ -488,11 +569,11 @@ pi -e ./pi-jev-governor --models qwen/qwen3.7-plus,qwen/qwen3.7-flash,qwen/qwen3
 
 </details>
 
-### 安全边界
+### 🧱 安全边界
 
 本包是**工作流控制，不是操作系统级沙箱**。它与 pi 运行在同一进程、拥有相同权限。不可信或无人值守的执行请使用容器化或其他系统安全边界。
 
-### 开发
+### 🧪 开发
 
 ```bash
 npm install
@@ -512,7 +593,7 @@ npm test
 
 交互 TUI 行为由 [docs/acceptance-tests.md](docs/acceptance-tests.md) 中的人工截图协议覆盖。
 
-### 文档
+### 📚 文档
 
 - [docs/design.md](docs/design.md) — v3 设计规范
 - [docs/acceptance-tests.md](docs/acceptance-tests.md) — 验收测试协议

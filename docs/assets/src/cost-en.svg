@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1540" height="720" viewBox="0 0 1540 720" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#F8F7FD"/>
+      <stop offset="1" stop-color="#F1EEFA"/>
+    </linearGradient>
+  </defs>
+  <rect width="1540" height="720" fill="url(#bg)"/>
+
+  <text x="72" y="104" font-size="48" font-weight="700" fill="#171A2E">Cost change vs the fixed-model baseline (%)</text>
+  <text x="72" y="152" font-size="26" fill="#61687E">MATH-500 · 458 text problems · four allocation strategies under the same Jev router</text>
+
+  <!-- noise band + zero line -->
+  <rect x="1028" y="180" width="44" height="408" fill="#7A7F93" opacity="0.10"/>
+  <text x="1084" y="212" font-size="20" fill="#8A8F9F">±2.6% rerun noise</text>
+  <line x1="1050" y1="180" x2="1050" y2="588" stroke="#3A3F52" stroke-width="2.5"/>
+
+  <!-- row 1: -45 -->
+  <text x="630" y="236" font-size="26" fill="#2A2F42" text-anchor="end">27b baseline · main → flash</text>
+  <rect x="660" y="196" width="390" height="64" rx="10" fill="#1F9E5F"/>
+  <text x="1032" y="240" font-size="30" font-weight="700" fill="#FFFFFF" text-anchor="end">−45%</text>
+  <text x="676" y="238" font-size="22" font-weight="700" fill="#FFFFFF">★ best cost</text>
+
+  <!-- row 2: -13 -->
+  <text x="630" y="340" font-size="26" fill="#2A2F42" text-anchor="end">plus baseline · main stays plus</text>
+  <rect x="936" y="300" width="114" height="64" rx="10" fill="#1F9E5F"/>
+  <text x="1032" y="344" font-size="26" font-weight="700" fill="#FFFFFF" text-anchor="end">−13%</text>
+
+  <!-- row 3: -1.4 -->
+  <text x="630" y="444" font-size="26" fill="#2A2F42" text-anchor="end">27b baseline · main stays 27b</text>
+  <rect x="1038" y="404" width="12" height="64" rx="6" fill="#1F9E5F"/>
+  <text x="1064" y="448" font-size="26" font-weight="700" fill="#1F9E5F">−1.4%</text>
+
+  <!-- row 4: +51 -->
+  <text x="630" y="548" font-size="26" fill="#2A2F42" text-anchor="end">flash baseline · main → 27b (upgrade)</text>
+  <rect x="1050" y="508" width="442" height="64" rx="10" fill="#DB8300"/>
+  <text x="1066" y="552" font-size="30" font-weight="700" fill="#FFFFFF">+51%</text>
+  <text x="1476" y="550" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="end">capability upgrade</text>
+
+  <text x="72" y="664" font-size="21" fill="#8A8F9F">Cost accounting: full-price (cold-prefix); cache effects excluded. Values are vs each row's fixed-model baseline.</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1540" height="720" viewBox="0 0 1540 720" font-family="PingFang SC, Hiragino Sans GB, Helvetica Neue, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#F8F7FD"/>
+      <stop offset="1" stop-color="#F1EEFA"/>
+    </linearGradient>
+  </defs>
+  <rect width="1540" height="720" fill="url(#bg)"/>
+
+  <text x="72" y="104" font-size="46" font-weight="700" fill="#171A2E">相对固定模型基线的成本变化（%）</text>
+  <text x="72" y="152" font-size="26" fill="#61687E">MATH-500 · 458 道文本题 · 同一 Jev 路由器下的四种分配策略</text>
+
+  <rect x="1028" y="180" width="44" height="408" fill="#7A7F93" opacity="0.10"/>
+  <text x="1084" y="212" font-size="20" fill="#8A8F9F">±2.6% 重跑噪声</text>
+  <line x1="1050" y1="180" x2="1050" y2="588" stroke="#3A3F52" stroke-width="2.5"/>
+
+  <text x="630" y="236" font-size="26" fill="#2A2F42" text-anchor="end">27b 基线 · 主力换 flash</text>
+  <rect x="660" y="196" width="390" height="64" rx="10" fill="#1F9E5F"/>
+  <text x="1032" y="240" font-size="30" font-weight="700" fill="#FFFFFF" text-anchor="end">−45%</text>
+  <text x="676" y="238" font-size="22" font-weight="700" fill="#FFFFFF">★ 最优成本</text>
+
+  <text x="630" y="340" font-size="26" fill="#2A2F42" text-anchor="end">plus 基线 · 主力保持 plus</text>
+  <rect x="936" y="300" width="114" height="64" rx="10" fill="#1F9E5F"/>
+  <text x="1032" y="344" font-size="26" font-weight="700" fill="#FFFFFF" text-anchor="end">−13%</text>
+
+  <text x="630" y="444" font-size="26" fill="#2A2F42" text-anchor="end">27b 基线 · 主力保持 27b</text>
+  <rect x="1038" y="404" width="12" height="64" rx="6" fill="#1F9E5F"/>
+  <text x="1064" y="448" font-size="26" font-weight="700" fill="#1F9E5F">−1.4%</text>
+
+  <text x="630" y="548" font-size="26" fill="#2A2F42" text-anchor="end">flash 基线 · 主力升 27b（升级）</text>
+  <rect x="1050" y="508" width="442" height="64" rx="10" fill="#DB8300"/>
+  <text x="1066" y="552" font-size="30" font-weight="700" fill="#FFFFFF">+51%</text>
+  <text x="1476" y="550" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="end">能力升级，不是省钱</text>
+
+  <text x="72" y="664" font-size="21" fill="#8A8F9F">记账口径：全价（冷前缀），缓存影响已排除；数值为各配置相对其固定模型基线的变化。</text>
+</svg>
