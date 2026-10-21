@@ -8,9 +8,6 @@ A decision governance layer for the [pi](https://pi.dev) coding agent, powered b
 
 Pi JEV Governor brings fast, typed, confidence-aware decisions into the pi agent lifecycle — deciding how a task should start, which model should handle it, whether tool actions may proceed, and whether the task is actually ready to finish.
 
-**Up to 45% lower model cost on MATH-500, with no accuracy loss.**<br>
-Jev decision overhead **1.4–2.6%** of cost · decision latency **P50 0.6–0.7 s**
-
 [![CI](https://github.com/Pyromind-Dynamics/pi-jev-governor/actions/workflows/ci.yml/badge.svg)](https://github.com/Pyromind-Dynamics/pi-jev-governor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![pi 0.87.1+](https://img.shields.io/badge/pi-0.87.1%2B-6f42c1)
@@ -23,10 +20,6 @@ Jev decision overhead **1.4–2.6%** of cost · decision latency **P50 0.6–0.7
 
 </div>
 
-<p align="center">
-  <img src="docs/assets/math500-results.png" alt="MATH-500: one router, four allocation strategies — cost changes from −45% to +51%, with no accuracy loss" width="860">
-</p>
-
 ## 🚦 Project Status
 
 - ✅ Plan strategy routing: `direct` / `plan_only` / `plan_then_execute`
@@ -35,42 +28,9 @@ Jev decision overhead **1.4–2.6%** of cost · decision latency **P50 0.6–0.7
 - ✅ Layered permission governance
 - ✅ Outcome validation and automatic correction
 - ✅ Structured decision logging
-- ✅ MATH-500 routing benchmark of the JEV routing mechanism
 - ✅ Pi 0.87.1 and 1.1.0 acceptance-tested (54 assertions each)
 - 🚧 npm release
-- 🚧 Broader coding-task benchmarks
 - 🚧 Additional routing policies
-
-## 📊 Benchmark Results
-
-The MATH-500 benchmark evaluates the JEV-based three-tier routing design used by Pi JEV Governor: tasks are routed to easy, main, or hard and compared against a fixed-model baseline. The evaluation uses 458 text-only problems from HuggingFaceH4/MATH-500 (42 image-based problems excluded). The benchmark focuses on model routing; the plugin's planning, permission, and outcome-governance features are outside this benchmark's scope.
-
-Across the four configurations, accuracy was maintained or improved, while cost ranged from **−45% to +51%** depending on how execution models were assigned to the routing tiers. The router itself is cheap; the dominant factor is which model it sends the work to.
-
-<p align="center">
-  <img src="docs/assets/math500-cost-change-en.png" alt="Cost change vs the fixed-model baseline: −45% (main tier to flash), −13%, −1.4% (within the ±2.6% rerun noise band), +51% (capability upgrade)" width="860">
-</p>
-
-| Baseline Config | Jev Routing Config | Accuracy Change | Cost Change |
-|---|---|---|---|
-| qwen3.8-27b | easy: flash / main: 27b / hard: max | 97.4% → 98.3% | −1.4% |
-| qwen3.8-27b | easy: 27b / main: flash / hard: max | 98.0% → 99.1% | **−45%** |
-| qwen3.8-flash | easy: flash / main: 27b / hard: max | 91.5% → 98.7% | +51% |
-| qwen3.7-plus | easy: flash / main: plus / hard: max | 98.3% → 98.7% | −13% |
-
-**Key findings**
-
-- Up to 45% lower cost with no accuracy loss.
-- Routing policy matters: placing the cheap model in the dominant main tier creates much larger savings than using it only for easy.
-- Price spread matters: larger cost differences between tier models create larger potential savings.
-- The +51% configuration is intentional: it upgrades the dominant main tier to a stronger model, trading budget for capability.
-- JEV overhead is small: 1.4–2.6% of total cost, with 0.6–0.7 s P50 decision latency.
-
-> The third configuration's larger accuracy gain (+7.2 pp) mainly reflects its much weaker starting baseline.
->
-> Cost is reported at full price; cache discounts are excluded.
->
-> 📊 Full report and methodology: [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
 
 ## 🧠 How It Works
 

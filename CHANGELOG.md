@@ -73,10 +73,11 @@ Added:
   full reference in `<details>`; the earlier four-node workflow figures were
   retired in favor of `docs/assets/governor-workflow.png`. (`README.md`,
   `README.zh-CN.md`, `CHANGELOG.md`, `docs/assets/`)
-- MATH-500 results card updated to the unified design
-  (`docs/assets/math500-results.png`), now shared by the English and 简体中文
-  READMEs; the earlier per-language results-card renders and their SVG sources
-  were retired.
+- README narrowed to the project design: the MATH-500 benchmark section
+  (results cards, cost chart, key findings, report link) was removed from both
+  READMEs; the full report remains in `docs/`, and the now-unused card/chart
+  assets (with their SVG sources and render script) were retired.
+  (`README.md`, `README.zh-CN.md`, `CHANGELOG.md`, `docs/assets/`)
 
 ## 0.1.0 (2026-10-08)
 

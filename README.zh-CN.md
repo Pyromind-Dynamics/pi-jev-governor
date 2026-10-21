@@ -8,9 +8,6 @@
 
 Pi JEV Governor 把快速、类型化、带置信度的决策引入 pi 的 agent 生命周期——决定任务如何开始、交给哪个模型处理、工具操作是否放行、以及任务是否真的可以交付。
 
-**MATH-500 上模型成本最多省 45%，精度不输。**<br>
-Jev 决策开销 **1.4–2.6%** · 决策延迟 **P50 0.6–0.7 秒**
-
 [![CI](https://github.com/Pyromind-Dynamics/pi-jev-governor/actions/workflows/ci.yml/badge.svg)](https://github.com/Pyromind-Dynamics/pi-jev-governor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![pi 0.87.1+](https://img.shields.io/badge/pi-0.87.1%2B-6f42c1)
@@ -23,10 +20,6 @@ Jev 决策开销 **1.4–2.6%** · 决策延迟 **P50 0.6–0.7 秒**
 
 </div>
 
-<p align="center">
-  <img src="docs/assets/math500-results.png" alt="MATH-500：同一决策模型，四种分配策略，成本从 −45% 到 +51%，精度不输" width="860">
-</p>
-
 ## 🚦 项目状态
 
 - ✅ 规划策略路由：`direct` / `plan_only` / `plan_then_execute`
@@ -35,42 +28,9 @@ Jev 决策开销 **1.4–2.6%** · 决策延迟 **P50 0.6–0.7 秒**
 - ✅ 分层权限治理
 - ✅ 结果校验与自动纠正
 - ✅ 结构化决策日志
-- ✅ JEV 路由机制的 MATH-500 路由基准
 - ✅ Pi 0.87.1 与 1.1.0 通过完整验收（各 54 项断言）
 - 🚧 npm 发布
-- 🚧 更广的编码类基准
 - 🚧 更多路由策略
-
-## 📊 基准结果（MATH-500）
-
-MATH-500 基准评测的是 Pi JEV Governor 所采用的 JEV 三档模型路由设计：任务被分配到 easy、main 或 hard，并与固定模型基线进行比较。评测使用 HuggingFaceH4/MATH-500 的 458 道文本题（42 道含图题排除）。该基准聚焦模型路由，插件中的规划、权限与结果治理能力不属于这组实验的评测范围。
-
-四组配置中，精度全部持平或更高，成本随执行模型与档位的对应方式在 **−45% 到 +51%** 之间变化——路由器本身很便宜，决定成本的是它把活派给了谁。
-
-<p align="center">
-  <img src="docs/assets/math500-cost-change-zh.png" alt="相对固定模型基线的成本变化：−45%（主力换 flash）、−13%、−1.4%（在 ±2.6% 重跑噪声带内）、+51%（能力升级）" width="860">
-</p>
-
-| 基线配置 | Jev 路由配置 | 精度变化 | 成本变化 |
-|---|---|---|---|
-| qwen3.8-27b | 简单题 flash / 主力 27b / 难题 max | 97.4% → 98.3% | −1.4% |
-| qwen3.8-27b | 简单题 27b / 主力 flash / 难题 max | 98.0% → 99.1% | **−45%** |
-| qwen3.8-flash | 简单题 flash / 主力 27b / 难题 max | 91.5% → 98.7% | +51% |
-| qwen3.7-plus | 简单题 flash / 主力 plus / 难题 max | 98.3% → 98.7% | −13% |
-
-**关键发现**
-
-- 成本最多降 45%，精度不输。
-- 路由策略决定成本：把便宜模型放进承担主要工作量的 main 档，比只用在 easy 档省得多。
-- 价差决定空间：档位间模型价差越大，潜在节省越大。
-- +51% 的配置是有意为之：把 main 档升级为更强的模型，用预算换能力。
-- JEV 开销很小：占总成本 1.4–2.6%，决策延迟 P50 0.6–0.7 秒。
-
-> 第三组较大的精度提升（+7.2pp）主要来自其弱得多的起点基线。
->
-> 成本按全价口径统计；缓存折扣不计入。
->
-> 📊 完整报告与方法论见 [docs/math500-final-report-20261003.md](docs/math500-final-report-20261003.md)
 
 ## 🧠 工作原理
 
